@@ -23,25 +23,36 @@ local function escolherTime()
     end
 end
 
--- Função para coletar frutas aleatórias (se estiver ativado)
+-- Função para coletar frutas no Blox Fruits
 local function coletarFrutas()
     if getgenv().RandomFruit then
-        -- Código para encontrar e coletar frutas aleatórias
-        -- Isso depende de como as frutas estão localizadas no jogo
         print("Buscando frutas aleatórias...")
 
-        -- Simulação de coleta de frutas (exemplo simples)
-        local fruits = {"Fruit1", "Fruit2", "Fruit3"}  -- Exemplo de frutas disponíveis
-        local chosenFruit = fruits[math.random(1, #fruits)]  -- Escolhe uma fruta aleatória
-        
-        -- Adiciona a fruta coletada ao inventário
-        table.insert(inventory, chosenFruit)
-        print("Fruta coletada: " .. chosenFruit)
-        
-        -- Exemplo de como mostrar o inventário no console
-        print("Inventário atual: ")
-        for _, fruit in pairs(inventory) do
-            print(fruit)
+        -- Procurando frutas no mapa
+        for _, v in pairs(workspace:GetChildren()) do
+            if v.Name == "Fruit" then  -- Verifica se o objeto é uma fruta
+                local fruit = v
+                if fruit:IsA("Model") and fruit:FindFirstChild("TouchInterest") then
+                    -- Verifica se a fruta tem a propriedade de toque
+                    -- Aqui você pode adicionar lógica para mover o jogador até a fruta
+
+                    -- Adiciona a fruta ao inventário
+                    table.insert(inventory, fruit.Name)
+                    print("Fruta coletada: " .. fruit.Name)
+                    
+                    -- Exibe o inventário
+                    print("Inventário atual: ")
+                    for _, fruitName in pairs(inventory) do
+                        print(fruitName)
+                    end
+                    
+                    -- Opcional: Tenta pegar a fruta (simulando toque)
+                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit, 0)
+                    wait(1)
+                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit, 1)
+                    return -- Apenas coleta uma fruta por vez
+                end
+            end
         end
     end
 end
@@ -49,10 +60,24 @@ end
 -- Função para ativar ESP de frutas (se estiver ativado)
 local function ativarEsp()
     if getgenv().EspFruit then
-        -- Código para ativar o ESP
-        -- Isso depende de como o ESP está implementado no jogo
         print("ESP de frutas ativado!")
-        -- Exemplo: Mostrar frutas no mapa
+        
+        -- Para cada fruta, criamos um highlight para destacar no mapa
+        for _, v in pairs(workspace:GetChildren()) do
+            if v.Name == "Fruit" then
+                local fruit = v
+                if fruit:IsA("Model") then
+                    -- Criar highlight para a fruta
+                    local highlight = Instance.new("Highlight")
+                    highlight.Parent = fruit
+                    highlight.Adornee = fruit
+                    highlight.FillColor = Color3.fromRGB(255, 0, 0)  -- Cor vermelha para a fruta
+                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)  -- Cor branca para o contorno
+                    highlight.OutlineTransparency = 0.5
+                    highlight.FillTransparency = 0.2
+                end
+            end
+        end
     end
 end
 
