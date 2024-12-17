@@ -1,92 +1,22 @@
--- Configurações iniciais
-getgenv().SpeedTween = 350
-getgenv().RandomFruit = true
-getgenv().EspFruit = true
-getgenv().Team = "Pirate"
-getgenv().WebhookUrl = '' -- Coloque a URL do seu webhook aqui, se necessário
+task.wait(1)  -- Aguardar a GUI carregar
 
--- Inventário de frutas
-local inventory = {}  -- Tabela para armazenar frutas coletadas
+local playerGui = game:GetService("Players").LocalPlayer.PlayerGui.Main
+local chooseTeamGui = playerGui:WaitForChild("ChooseTeam")
+local piratesButton = chooseTeamGui:WaitForChild("Container"):WaitForChild("Pirates"):WaitForChild("Frame"):WaitForChild("TextButton")
+local marinesButton = chooseTeamGui:WaitForChild("Container"):WaitForChild("Marines"):WaitForChild("Frame"):WaitForChild("TextButton")
 
--- Função para forçar a escolha do time "Pirata"
-local function escolherTime()
-    local Players = game:GetService("Players")
-    local player = Players.LocalPlayer
-
-    -- Acessa o time "Pirate" diretamente
-    for _, team in pairs(game:GetService("Teams"):GetChildren()) do
-        if team.Name == getgenv().Team then
-            player.Team = team
-            print("Time definido como Pirata!")
-            return
-        end
-    end
+-- Verificar e acionar a seleção de time
+if string.find(tostring(getgenv().Team), "Pirate") then
+    piratesButton:Click()
+elseif string.find(tostring(getgenv().Team), "Marine") then
+    marinesButton:Click()
+else
+    piratesButton:Click()  -- Default para Pirate se nenhum time for especificado
 end
-
--- Função para coletar frutas no Blox Fruits
-local function coletarFrutas()
-    if getgenv().RandomFruit then
-        print("Buscando frutas aleatórias...")
-
-        -- Procurando frutas no mapa
-        for _, v in pairs(workspace:GetChildren()) do
-            if v.Name == "Fruit" then  -- Verifica se o objeto é uma fruta
-                local fruit = v
-                if fruit:IsA("Model") and fruit:FindFirstChild("TouchInterest") then
-                    -- Verifica se a fruta tem a propriedade de toque
-                    -- Aqui você pode adicionar lógica para mover o jogador até a fruta
-
-                    -- Adiciona a fruta ao inventário
-                    table.insert(inventory, fruit.Name)
-                    print("Fruta coletada: " .. fruit.Name)
-                    
-                    -- Exibe o inventário
-                    print("Inventário atual: ")
-                    for _, fruitName in pairs(inventory) do
-                        print(fruitName)
-                    end
-                    
-                    -- Opcional: Tenta pegar a fruta (simulando toque)
-                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit, 0)
-                    wait(1)
-                    firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, fruit, 1)
-                    return -- Apenas coleta uma fruta por vez
-                end
-            end
-        end
-    end
+local queueteleport = syn and syn.queue_on_teleport or queue_on_teleport or fluxus and fluxus.queue_on_teleport
+if queueteleport then
+local script = [[loadstring(game:HttpGet('https://raw.githubusercontent.com/VNT-UNIVERSAL/Panda-Hub/main/Release/fruit.lua'))()]]
+queueteleport(script)
 end
-
--- Função para ativar ESP de frutas (se estiver ativado)
-local function ativarEsp()
-    if getgenv().EspFruit then
-        print("ESP de frutas ativado!")
-        
-        -- Para cada fruta, criamos um highlight para destacar no mapa
-        for _, v in pairs(workspace:GetChildren()) do
-            if v.Name == "Fruit" then
-                local fruit = v
-                if fruit:IsA("Model") then
-                    -- Criar highlight para a fruta
-                    local highlight = Instance.new("Highlight")
-                    highlight.Parent = fruit
-                    highlight.Adornee = fruit
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0)  -- Cor vermelha para a fruta
-                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)  -- Cor branca para o contorno
-                    highlight.OutlineTransparency = 0.5
-                    highlight.FillTransparency = 0.2
-                end
-            end
-        end
-    end
+loadstring(game:HttpGet('https://raw.githubusercontent.com/VNT-UNIVERSAL/Panda-Hub/main/Release/fruit.lua'))()
 end
-
--- Função principal que coordena as ações
-local function executarScript()
-    escolherTime()      -- Escolhe automaticamente o time
-    coletarFrutas()     -- Coleta frutas aleatórias, se ativado
-    ativarEsp()         -- Ativa o ESP, se necessário
-end
-
--- Chama a função principal
-executarScript()
